@@ -1,4 +1,3 @@
-import random
 import sys
 import os
 import numpy as np
@@ -80,7 +79,6 @@ def to_accuracy_by_samples(training_set, test_set):
       label = pca.classify(test['data'])
       if (label == test['label']):
         correct_res += 1
-    print('\nk:', k, '\ncorrect_res:', correct_res)
     return correct_res / len(test_set)
 
   return calcAccuracy
