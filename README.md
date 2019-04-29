@@ -5,7 +5,7 @@
 
 ![](./images/plot.png)
 
-(Note: Training with CPU is quite slow and can take up to 15 mins 😕)
+(Note: Training with CPU is quite slow given the eigenvalue decomposition on 10304 X 10304 matrix, and can take up to 15 mins 😕)
 
 ## Get started
 
