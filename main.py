@@ -10,7 +10,6 @@ https://stackoverflow.com/questions/49367013/pipenv-install-matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-# K_DIMENSION = [1, 2, 3, 6, 10, 20, 30, 50]
 K_DIMENSION = [1, 2, 3, 6, 10, 20, 30, 50]
 
 class PCA:
@@ -50,28 +49,32 @@ class PCA:
 
     all_dist = []
     for i in range(len(self.data)):
-      all_dist.append(np.linalg.norm(projection - self.Y[:, i-1:i]))
+      all_dist.append(np.linalg.norm(projection - self.Y[:, i:i+1]))
 
     idx = np.argmin(all_dist)
     return self.data[idx]['label']
 
 
-# """
-# Render the line chart. `matplotlib` conflicts with pipenv 😞. Check:
-# https://matplotlib.org/faq/osx_framework.html
-# """
-# def plot_costs(costs):
-#   plt.plot(range(len(costs)), costs, 'r-o')
-#   plt.axis([0, len(costs), 0, max(costs) * 1.5])
-#   plt.xlabel('Iteration')
-#   plt.ylabel('J (Cost) in assignment step')
-#   plt.show()
+def plot_accuracies(accuracies):
+  """
+  Render the line chart. `matplotlib` conflicts with pipenv 😞. Check:
+  https://matplotlib.org/faq/osx_framework.html
+  """
+  plt.plot(K_DIMENSION, list(map(lambda x : x * 100, accuracies)), 'r-o')
+  plt.axis([0, max(K_DIMENSION), 0, 100])
+  plt.xlabel('K (reduced dimension)')
+  plt.ylabel('Accuracy (%)')
+  plt.show()
 
 def to_accuracy_by_samples(training_set, test_set):
-  def calcAccuracy(k):
-    pca = PCA(training_set)
-    pca.set_k(k)
+  """
+  Closure to keep training and test set, and calculates eigenvectors only once.
+  Returns the mapping function to calculate accuracy rate of given K dimension.
+  """
+  pca = PCA(training_set)
 
+  def calcAccuracy(k):
+    pca.set_k(k)
     correct_res = 0
     for test in test_set:
       label = pca.classify(test['data'])
@@ -84,9 +87,9 @@ def to_accuracy_by_samples(training_set, test_set):
 
 def read_and_parse_file(folder_path):
   """
-    Read and parse all files from the subdirectory under given folder_path.
-    And split them into training set and test set using the definition below:
-    `file name is (2, 6, 8, 10)`
+  Read and parse all files from the subdirectory under given folder_path.
+  And split them into training set and test set using the definition below:
+  `file name is (2, 6, 8, 10)`
   """
   TEST_SET_DEF = { 2: True, 6: True, 8: True, 10: True }
   training_set, test_set = [], []
@@ -127,7 +130,5 @@ if __name__ == '__main__':
     toAccuracy = to_accuracy_by_samples(training_set, test_set)
     accuracies = list(map(toAccuracy, K_DIMENSION))
 
-    # print("Costs:", costs)
-
     # Plot the accuracy with nice line chart
-    # plot_costs(costs)
+    plot_accuracies(accuracies)
